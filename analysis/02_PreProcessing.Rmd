@@ -1,0 +1,91 @@
+---
+title: "Phyloseq Preprocessing"
+output: html_document
+date: "2024-03-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      fig.align = "center", 
+                      fig.path = "../figures/01_DADA2/") # send any figure output to this folder
+```
+
+# Load Libraries
+
+```{r load packages}
+install.packages("devtools")
+library(devtools)
+BiocManager::install("phyloseq")
+library(phyloseq)
+library(tidyverse)
+```
+
+#Goals
+ 
+ 
+ Here, we will process the data into a phyloseq object.
+ 
+ -ASV Table 
+ -Taxonomy Table
+ -Track Reads (metadata)
+ 
+ Then we will remove the following:
+ 
+ 1. Remove the chloroplasts
+ 2. Remove mitochondira
+ 3. Remove samples without enough reads
+ 
+ #Load Data
+ 
+ #ASV Table 
+```{r load asv-table}
+# First load avs table 
+load("data/01_DADA2/ASV_counts.RData")
+
+# Inspect asv_tab
+head(asv_tab)[,1:5]
+
+# Fix names
+sample_names <- colnames(asv_tab)
+samples_fixed <- sapply(strsplit(basename(sample_names), "_"), `[`,1) 
+head(samples_fixed)
+
+# re-write the ASV count file to fix names 
+colnames(asv_tab) <- samples_fixed
+typeof(asv_tab)
+str(asv_tab)
+```
+ 
+ #Taxonomy Table
+ 
+```{r load taxonomy-table}
+tax_df <- read.table("data/01_DADA2/ASV_taxonomy.tsv", sep = "\t", skip = 1)
+head(tax_df)
+
+# fix column names 
+colnames(tax_df) <- c("ASVnames", "Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species", "ASV", "ASVseq")
+
+head(tax_df)
+
+# Taxonomy Table Matrix
+
+tax_mat <- 
+  tax_df %>%
+  tibble::column_to_rownames(., var ="asv_names") %>%
+  as.matrix
+```
+ 
+ #Track Reads Data
+ 
+```{r load track-reads}
+
+```
+ 
+ 
+ #Handoff
+ 
+```{r phyloseq-handoff}
+
+```
+ 
+ 
